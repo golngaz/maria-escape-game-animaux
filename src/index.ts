@@ -1,3 +1,9 @@
+import unicornImg from '../assets/img/licorne.jpg';
+
+class Choice {
+    constructor(public backgroundUrl, public title: string, public dialog: string, public choices: Array<Choice>) {
+    }
+}
 
 class Game {
     /**
@@ -11,9 +17,15 @@ class Game {
     }
 
     public run() {
+        this.init();
+
+        // const choices = [
+        //     new Choice()
+        // ]
+
         let choices = [
-            { x: this.canvas.width * 0.2, y: this.canvas.height * 0.4, width: 100, height: 200, text: "Porte 1", action: "foo1", response: "bar1" },
-            { x: this.canvas.width * 0.4, y: this.canvas.height * 0.4, width: 100, height: 200, text: "Porte 2", action: "foo2", response: "bar2" },
+            { x: this.canvas.width * 0.2, y: this.canvas.height * 0.4, width: 100, height: 200, text: "Vers la banque", action: "foo1", response: "bar1" },
+            { x: this.canvas.width * 0.4, y: this.canvas.height * 0.4, width: 100, height: 200, text: "Chez l'horloger", action: "foo2", response: "bar2" },
             { x: this.canvas.width * 0.6, y: this.canvas.height * 0.4, width: 100, height: 200, text: "Porte 3", action: "foo3", response: "bar3" },
             { x: this.canvas.width * 0.8, y: this.canvas.height * 0.4, width: 100, height: 200, text: "Porte 4", action: "foo4", response: "bar4" }
         ];
@@ -65,8 +77,14 @@ class Game {
     }
 
     public init() {
+        this.setBackground(unicornImg);
+
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+    }
+
+    public setBackground(img) {
+        this.canvas.style.backgroundImage = `url(${img})`;
     }
 }
 
