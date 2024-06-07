@@ -1,9 +1,46 @@
 import unicornImg from '../assets/img/licorne.jpg';
+import lionImg from '../assets/img/lion.jpg';
+import duckImg from '../assets/img/duck.png';
+import script from './script.json';
 
-class Choice {
-    constructor(public backgroundUrl, public title: string, public dialog: string, public choices: Array<Choice>) {
+class Rect {
+    constructor(public x, public y, public width, public height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
+    draw(ctx: CanvasRenderingContext2D, text?: string) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+
+    contains(x, y) {
+        return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
     }
 }
+
+class Button {
+    constructor(public rect: Rect, public treeLink: keyof Tree, public text = '') {
+    }
+
+    public draw(ctx) {
+        this.rect.draw(ctx, this.text);
+
+        if (this.text) {
+            ctx.fillStyle = 'black';
+            ctx.fillText(this.text, this.rect.x + 10, this.rect.y + 110);
+        }
+    }
+}
+
+class Scene {
+    constructor(public img, public text: string, public choices: Array<Button>) {
+    }
+}
+
+type Tree = Record<string, Scene>;
 
 class Game {
     /**
@@ -12,63 +49,59 @@ class Game {
     public score = 0;
     private ctx: CanvasRenderingContext2D;
 
+    private tree: Tree;
+
     constructor(private canvas: HTMLCanvasElement) {
         this.ctx = canvas.getContext('2d');
+
+        this.init();
     }
 
-    public run() {
-        this.init();
+    public run(tree: Tree, initBranch: string) {
+        this.tree = tree;
+        this.drawScene(this.tree[initBranch]);
+    }
 
-        // const choices = [
-        //     new Choice()
-        // ]
+    private drawScene(scene: Scene) {
+        this.drawChoices(scene.choices);
 
-        let choices = [
-            { x: this.canvas.width * 0.2, y: this.canvas.height * 0.4, width: 100, height: 200, text: "Vers la banque", action: "foo1", response: "bar1" },
-            { x: this.canvas.width * 0.4, y: this.canvas.height * 0.4, width: 100, height: 200, text: "Chez l'horloger", action: "foo2", response: "bar2" },
-            { x: this.canvas.width * 0.6, y: this.canvas.height * 0.4, width: 100, height: 200, text: "Porte 3", action: "foo3", response: "bar3" },
-            { x: this.canvas.width * 0.8, y: this.canvas.height * 0.4, width: 100, height: 200, text: "Porte 4", action: "foo4", response: "bar4" }
-        ];
+        this.setBackground(scene.img);
+    }
 
-        let currentRoom = null;
+    private drawChoices(choices: Array<Button>) {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        choices.forEach(choice => {
+            choice.draw(this.ctx);
+        });
 
         this.canvas.addEventListener('click', (e) => {
-            if (currentRoom) {
-                currentRoom = null;
-                this.drawChoices(choices);
-            } else {
-                const { offsetX, offsetY } = e;
-                choices.forEach(door => {
-                    if (offsetX > door.x && offsetX < door.x + door.width && offsetY > door.y && offsetY < door.y + door.height) {
-                        currentRoom = door;
-                        this.drawRoom(door);
-                    }
-                });
-            }
-        });
-
-        this.drawChoices(choices);
-    }
-
-    private drawChoices(choices) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        choices.forEach(door => {
-            this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-            this.ctx.fillRect(door.x, door.y, door.width, door.height);
-            this.ctx.fillStyle = 'black';
-            this.ctx.fillText(door.text, door.x + 10, door.y + 110);
+            const { offsetX, offsetY } = e;
+            choices.forEach((choice, i) => {
+                if (choice.rect.contains(offsetX, offsetY)) {
+                    this.drawScene(this.tree[choice.treeLink]);
+                }
+            });
         });
     }
 
-    private drawRoom(room) {
+    private drawRoom(choice: Scene) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.fillStyle = 'black';
-        this.ctx.fillText(`Vous êtes dans la ${room.text}`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 100);
-        this.ctx.fillText(`Action: ${room.action}`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 70);
-        this.ctx.fillText(`Réponse: ${room.response}`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 40);
+        this.ctx.fillText(`Vous êtes dans la ${choice.text}`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 100);
+        // this.ctx.fillText(`Action: ${choice.action}`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 70);
+        // this.ctx.fillText(`Réponse: ${choice.response}`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 40);
         this.ctx.fillText(`Cliquez pour revenir`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 10);
+    }
+
+    public rectFromIndex(index: number) {
+        return new Rect(
+            canvas.width * (((index + 1) * 2) / 10),
+            canvas.height * 0.4,
+            100,
+            200
+        )
     }
 
     private gameover() {
@@ -77,8 +110,6 @@ class Game {
     }
 
     public init() {
-        this.setBackground(unicornImg);
-
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
     }
@@ -88,7 +119,63 @@ class Game {
     }
 }
 
-const game = new Game(document.getElementById('gameCanvas') as HTMLCanvasElement);
+let canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 
-game.run();
+// @todo passer dans le bouton createFromIndex ou truc dans le genre
 
+
+const game = new Game(canvas);
+
+const tree = { // @todo supprimer, et faire fonctionner le loader
+    init: new Scene(unicornImg, 'Chemin de traverse', [
+        new Button(game.rectFromIndex(0),'banque', 'Banque'),
+        new Button(game.rectFromIndex(1), 'lion', 'Lion'),
+        new Button(game.rectFromIndex(2), 'lion2', 'Lion to canard')
+    ]),
+    banque: new Scene(lionImg, 'Bonjour, vous voulez retirer de l\'argent ?', [
+        new Button(game.rectFromIndex(0), 'banque', 'BLOQUEEE'),
+    ]),
+    lion: new Scene(lionImg, 'Agrou', [
+        new Button(game.rectFromIndex(0), 'init', 'Perdu ?'),
+    ], ),
+    lion2: new Scene(lionImg, 'Agrou 2', [
+        new Button(game.rectFromIndex(0), 'canard', 'Choix canard'),
+        new Button(game.rectFromIndex(1), 'init', 'Choix pas canard'),
+    ]),
+    canard: new Scene(duckImg, 'coin coin', []),
+}
+
+type SceneDataType = { img: string, name: string, choices: Array<{ link: string, title: string }> };
+
+class Loader {
+    constructor(private data: Record<string, SceneDataType>) {
+    }
+
+    private async sceneFromData(data: SceneDataType, index: number): Promise<Scene> {
+        const image = await import(data.img);
+
+        let scene = new Scene(image, data.name, []);
+        data.choices.forEach((choiceDatum) => {
+            scene.choices.push(new Button(game.rectFromIndex(index), choiceDatum.link, choiceDatum.title));
+        });
+
+        return scene;
+    }
+
+    async tree(): Promise<Record<string, Scene>> {
+        let result = {}
+        let data = this.data;
+        for (const key of Object.keys(data)) {
+            const index = Object.keys(data).indexOf(key);
+            result[key] = await this.sceneFromData(data[key], index);
+        }
+
+        return result;
+    }
+}
+
+const loader = new Loader(script);
+
+// loader.tree().then((tree) => game.run(tree, 'init'));
+
+game.run(tree, 'init');
