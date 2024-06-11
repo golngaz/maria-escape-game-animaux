@@ -2,6 +2,10 @@ import unicornImg from '../assets/img/licorne.jpg';
 import lionImg from '../assets/img/lion.jpg';
 import duckImg from '../assets/img/duck.png';
 import script from './script.json';
+import Emitter from './Emitter';
+
+
+const emitter = new Emitter();
 
 class Rect {
     constructor(public x, public y, public width, public height) {
@@ -11,7 +15,7 @@ class Rect {
         this.height = height;
     }
 
-    draw(ctx: CanvasRenderingContext2D, text?: string) {
+    draw(ctx: CanvasRenderingContext2D) {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
@@ -26,7 +30,7 @@ class Button {
     }
 
     public draw(ctx) {
-        this.rect.draw(ctx, this.text);
+        this.rect.draw(ctx);
 
         if (this.text) {
             ctx.fillStyle = 'black';
@@ -51,6 +55,8 @@ class Game {
 
     private tree: Tree;
 
+    private lastBindButton: null | number = null;
+
     constructor(private canvas: HTMLCanvasElement) {
         this.ctx = canvas.getContext('2d');
 
@@ -63,9 +69,24 @@ class Game {
     }
 
     private drawScene(scene: Scene) {
-        this.drawChoices(scene.choices);
+        if (this.lastBindButton !== null) {
+            emitter.off(this.lastBindButton);
+            this.lastBindButton = null;
+        }
 
+        this.drawChoices(scene.choices);
         this.setBackground(scene.img);
+    }
+
+    private handleClickButton(choices: Array<Button>) {
+        return (e) => {
+            const { offsetX, offsetY } = e;
+            choices.forEach((choice, i) => {
+                if (choice.rect.contains(offsetX, offsetY)) {
+                    this.drawScene(this.tree[choice.treeLink]);
+                }
+            });
+        }
     }
 
     private drawChoices(choices: Array<Button>) {
@@ -74,14 +95,9 @@ class Game {
             choice.draw(this.ctx);
         });
 
-        this.canvas.addEventListener('click', (e) => {
-            const { offsetX, offsetY } = e;
-            choices.forEach((choice, i) => {
-                if (choice.rect.contains(offsetX, offsetY)) {
-                    this.drawScene(this.tree[choice.treeLink]);
-                }
-            });
-        });
+        if (this.lastBindButton === null) {
+            this.lastBindButton = emitter.emit(this.canvas, 'click', this.handleClickButton(choices));
+        }
     }
 
     private drawRoom(choice: Scene) {
@@ -120,8 +136,6 @@ class Game {
 }
 
 let canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
-
-// @todo passer dans le bouton createFromIndex ou truc dans le genre
 
 
 const game = new Game(canvas);

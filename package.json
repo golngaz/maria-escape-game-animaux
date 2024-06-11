@@ -17,5 +17,9 @@
   "devDependencies": {
     "parcel-bundler": "^1.12.5",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "eventemitter3": "^5.0.1",
+    "mitt": "^3.0.1"
   }
 }
