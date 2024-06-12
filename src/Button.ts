@@ -10,7 +10,7 @@ export default class Button {
 
         if (this.text) {
             ctx.fillStyle = 'black';
-            ctx.fillText(this.text, this.rect.x + 10, this.rect.y + 110);
+            ctx.fillText(this.text, this.rect.x + 10, this.rect.y + 20);
         }
     }
 }

@@ -5,7 +5,8 @@
     "choices": [
       { "title": "Banque", "link": "banque" },
       { "title": "Lion", "link": "lion" },
-      { "title": "Lion to canard", "link": "lion2" }
+      { "title": "Lion to canard", "link": "lion2" },
+      { "title": "Lion to canard 2", "link": "lion2" }
     ]
   },
   "banque": {

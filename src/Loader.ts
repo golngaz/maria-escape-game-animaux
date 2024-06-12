@@ -12,11 +12,14 @@ export default class Loader {
     }
 
     private rectFromIndex(index: number) {
+        const height = 0.1 * this.canvas.height;
+        const startButtons = this.canvas.height * 0.6;
+
         return new Rect(
-            this.canvas.width * (((index + 1) * 2) / 10),
-            this.canvas.height * 0.4,
-            100,
-            200
+            this.canvas.width * 0.1,
+            startButtons + (index * height),
+            this.canvas.width * 0.8,
+            height - 10
         )
     }
 
@@ -25,7 +28,9 @@ export default class Loader {
 
         let scene = new Scene(image, data.name, []);
         data.choices.forEach((choiceDatum, i) => {
-            scene.choices.push(new Button(this.rectFromIndex(i), choiceDatum.link, choiceDatum.title));
+            let rect = this.rectFromIndex(i);
+            console.log(rect);
+            scene.choices.push(new Button(rect, choiceDatum.link, choiceDatum.title));
         });
 
         return scene;
