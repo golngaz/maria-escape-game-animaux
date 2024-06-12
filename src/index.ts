@@ -1,11 +1,8 @@
-import script from './script.json';
-import Loader from './Loader';
 import Game from './Game';
+import { load } from '../script/loads';
 
 let canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 
 const game = new Game(canvas);
 
-const loader = new Loader(script, canvas);
-
-game.run(loader.tree(), 'init');
+game.run(load(canvas).tree(), 'index');

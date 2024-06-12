@@ -41,7 +41,12 @@ export default class Game {
             const { offsetX, offsetY } = e;
             choices.forEach((choice, i) => {
                 if (choice.rect.contains(offsetX, offsetY)) {
-                    this.drawScene(this.tree[choice.treeLink]);
+                    const treeElement = this.tree[choice.treeLink];
+
+                    if (!treeElement) {
+                        throw new Error('La scene "' + choice.treeLink + '" est introuvable');
+                    }
+                    this.drawScene(treeElement);
                 }
             });
         }
