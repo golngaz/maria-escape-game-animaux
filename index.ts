@@ -1,5 +1,5 @@
-import Game from './Game';
-import { load } from '../script/loads';
+import Game from './src/Game';
+import { load } from './src/Script/load-script';
 
 let canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 
