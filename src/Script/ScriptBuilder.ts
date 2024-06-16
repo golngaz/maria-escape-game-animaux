@@ -6,10 +6,12 @@ import DisplayWrapperHandler from './Event/DisplayWrapperHandler';
 import HandlerInterface from './Event/HandlerInterface';
 import SceneProvider from './SceneProvider';
 import { Howl } from 'howler';
+import SelectChoiceWrapperHandler from './Event/SelectChoiceWrapperHandler';
 
 class ChoiceToBuild {
     private _title: string;
     private _link: string;
+    public handlers: Array<SelectChoiceWrapperHandler> = [];
 
     constructor(private canvas: HTMLCanvasElement, private index) {
     }
@@ -22,16 +24,25 @@ class ChoiceToBuild {
 
     link(link: string) {
         this._link = link;
+
+        return this;
     }
 
     toChoice(): Button {
         return ButtonProvider.provideFromCanvas(this.canvas, this.index, this._link, this._title);
     }
+
+    onClick(handler) {
+        this.handlers.push(new SelectChoiceWrapperHandler(this.index, handler))
+
+        return this;
+    }
 }
 
 export class SceneToBuild {
     public _id: string;
-    private _name: string;
+    private _title: string;
+    private _dialog: string;
     private _choices: ChoiceToBuild[] = [];
     private _img: any;
     private handlers: HandlerInterface[] = [];
@@ -39,20 +50,27 @@ export class SceneToBuild {
     constructor(private canvas: HTMLCanvasElement) {}
 
     public toScene(): Scene {
-        if (!this.id || !this.name || this._choices.length < 0 || this._choices.length > 4) {
+        if (!this.id || this._choices.length < 0 || this._choices.length > 4) {
+            alert('Erreur');
             throw new Error('Invalid Script');
         }
 
         let choices = this._choices.map(choice => choice.toChoice());
-        return new Scene(this._img, this._name, choices, this.handlers);
+        this._choices.forEach((choiceToBuild: ChoiceToBuild) => {
+            choiceToBuild.handlers.forEach(handler => {
+                this.handlers.push(handler);
+            });
+        })
+
+        return new Scene(this._img, this._title, this._dialog, choices, this.handlers);
     }
 
     public id(id: string) {
         this._id = id;
     }
 
-    public name(name: string) {
-        this._name = name;
+    public title(name: string) {
+        this._title = name;
     }
 
     public img(img) {
@@ -90,6 +108,10 @@ export class SceneToBuild {
             // Jouer la musique après l'interaction de l'utilisateur
             howl.play();
         });
+    }
+
+    dialog(dialog: string) {
+        this._dialog = dialog;
     }
 }
 
