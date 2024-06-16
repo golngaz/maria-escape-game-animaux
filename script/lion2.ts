@@ -1,11 +1,15 @@
 import lionImg from '../assets/img/lion.jpg';
-import { SceneToBuild, Vars } from '../src/ScriptBuilder';
+import { SceneToBuild } from '../src/Script/ScriptBuilder';
+import Game from '../src/Game';
 
-export default (scene: SceneToBuild, vars: Vars) => {
-    scene.id('lion2');
+export default (scene: SceneToBuild, game: Game) => {
     scene.name('Agrou 2');
     scene.img(lionImg);
 
-    scene.choice('Choix canard').link('canard');
+    scene.choice('LION 2').link('canard');
     scene.choice('Choix pas canard').link('index');
+
+    if (game.var('lion-saw') === true) {
+        scene.choice('CHOIX BONUSSSSS');
+    }
 };

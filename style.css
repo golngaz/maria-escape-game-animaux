@@ -12,8 +12,9 @@ body, html {
 #gameCanvas {
     /*background: url('https://wallpapers.com/images/featured/fantastic-beasts-djhcjfwnmkd08g8j.jpg') no-repeat center center;*/
     /*background-size: cover;*/
-    background-color: grey;
-    background-size: contain;
+    /*background-color: grey;*/
+    /*background-size: contain;*/
     background-repeat: no-repeat;
     background-position: center;
+    background-size: cover;
 }

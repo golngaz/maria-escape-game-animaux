@@ -1,15 +1,14 @@
 import lionImg from '../assets/img/lion.jpg';
-import { SceneToBuild, Vars } from '../src/ScriptBuilder';
+import { SceneToBuild } from '../src/Script/ScriptBuilder';
 import Game from '../src/Game';
 
-export default (scene: SceneToBuild) => {
-    scene.id('lion');
+export default (scene: SceneToBuild, game: Game) => {
     scene.name('Agrou');
     scene.img(lionImg);
 
     scene.choice('Perdu ?').link('index');
 
-    scene.onDisplay((game: Game) => {
-        game.var('lion-saw', true)
-    })
+    scene.onDisplay(() => {
+        game.var('lion-saw', true);
+    });
 };

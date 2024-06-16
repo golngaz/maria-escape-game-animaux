@@ -1,8 +1,8 @@
 import lionImg from '../assets/img/lion.jpg';
-import { SceneToBuild, Vars } from '../src/ScriptBuilder';
+import { SceneToBuild } from '../src/Script/ScriptBuilder';
+import Game from '../src/Game';
 
-export default (scene: SceneToBuild, vars: Vars) => {
-    scene.id('bank');
+export default (scene: SceneToBuild, game: Game) => {
     scene.name('Bonjour, vous voulez retirer de l\'argent ?');
     scene.img(lionImg);
 

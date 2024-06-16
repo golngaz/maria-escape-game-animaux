@@ -5,4 +5,7 @@ let canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 
 const game = new Game(canvas);
 
-game.run(load(canvas).tree(), 'index');
+
+load(canvas).then((loader) => {
+    game.run(loader.tree(), 'index');
+});

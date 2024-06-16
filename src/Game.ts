@@ -1,7 +1,12 @@
-import { Tree } from './Loader';
 import Scene from './Scene';
 import Emitter from './Emitter';
 import Button from './Button';
+import DisplayEvent from './Script/Event/DisplayEvent';
+import SceneProvider from './Script/SceneProvider';
+
+type VarDatum = string | boolean | null;
+
+export type Tree = Record<string, SceneProvider>;
 
 export default class Game {
     /**
@@ -10,20 +15,22 @@ export default class Game {
     public score = 0;
     private readonly ctx: CanvasRenderingContext2D;
 
-    private tree: Tree;
+    public _tree: Tree;
 
     private lastBindButton: null | number = null;
+    private vars: Record<string, VarDatum> = {};
 
-    constructor(private canvas: HTMLCanvasElement, private readonly emitter?: Emitter) {
-        this.ctx = canvas.getContext('2d');
+    constructor(public _canvas: HTMLCanvasElement, private readonly emitter?: Emitter) {
+        this.ctx = _canvas.getContext('2d');
         this.emitter = this.emitter === null ? this.emitter : new Emitter();
 
         this.init();
     }
 
     public run(tree: Tree, initBranch: string) {
-        this.tree = tree;
-        this.drawScene(this.tree[initBranch]);
+        this._tree = tree;
+        let sceneProvider = this._tree[initBranch];
+        this.drawScene(sceneProvider.provide(this));
     }
 
     private drawScene(scene: Scene) {
@@ -41,50 +48,58 @@ export default class Game {
             const { offsetX, offsetY } = e;
             choices.forEach((choice, i) => {
                 if (choice.rect.contains(offsetX, offsetY)) {
-                    const treeElement = this.tree[choice.treeLink];
+                    const sceneProvider = this._tree[choice.treeLink];
 
-                    if (!treeElement) {
+                    if (!sceneProvider) {
                         throw new Error('La scene "' + choice.treeLink + '" est introuvable');
                     }
-                    this.drawScene(treeElement);
+
+                    const scene = sceneProvider.provide(this);
+                    this.drawScene(scene);
+                    const event = new DisplayEvent(this);
+                    scene.handlers.filter(handler => handler.supports(event)).forEach(handler => handler.handle(event))
                 }
             });
         }
     }
 
     private drawChoices(choices: Array<Button>) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
         choices.forEach(choice => {
             choice.draw(this.ctx);
         });
 
         if (this.lastBindButton === null) {
-            this.lastBindButton = this.emitter.emit(this.canvas, 'click', this.handleClickButton(choices));
+            this.lastBindButton = this.emitter.emit(this._canvas, 'click', this.handleClickButton(choices));
         }
     }
 
     private drawRoom(choice: Scene) {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
         this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillRect(0, 0, this._canvas.width, this._canvas.height);
         this.ctx.fillStyle = 'black';
-        this.ctx.fillText(`Vous êtes dans la ${choice.text}`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 100);
+        this.ctx.fillText(`Vous êtes dans la ${choice.text}`, this._canvas.width / 2 - 100, this._canvas.height / 2 - 100);
         // this.ctx.fillText(`Action: ${choice.action}`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 70);
         // this.ctx.fillText(`Réponse: ${choice.response}`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 40);
-        this.ctx.fillText(`Cliquez pour revenir`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 10);
-    }
-
-    private gameover() {
-        this.score--;
-        this.init();
+        this.ctx.fillText(`Cliquez pour revenir`, this._canvas.width / 2 - 100, this._canvas.height / 2 - 10);
     }
 
     public init() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        this._canvas.width = window.innerWidth;
+        this._canvas.height = window.innerHeight;
     }
 
     public setBackground(img) {
-        this.canvas.style.backgroundImage = `url(${img})`;
+        this._canvas.style.backgroundImage = `url(${img})`;
+    }
+
+    public var(key: string, value?: VarDatum): VarDatum {
+        console.log(key, value)
+        if (value === undefined) {
+            return this.vars[key] === undefined ? null : this.vars[key];
+        } else {
+            this.vars[key] = value;
+        }
     }
 }

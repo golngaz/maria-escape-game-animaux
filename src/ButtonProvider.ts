@@ -1,6 +1,6 @@
 import Rect from './Rect';
 import Button from './Button';
-import { Tree } from './Loader';
+import { Tree } from './Game';
 
 export default class ButtonProvider {
     private static rectFromIndex(height: number, width: number, index: number) {

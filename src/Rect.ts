@@ -6,11 +6,6 @@ export default class Rect {
         this.height = height;
     }
 
-    draw(ctx: CanvasRenderingContext2D) {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-    }
-
     contains(x, y) {
         return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
     }

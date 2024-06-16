@@ -1,14 +1,16 @@
-import Scene from './Scene';
-import { Tree } from './Loader';
-import Button from './Button';
-import Rect from './Rect';
-import ButtonProvider from './ButtonProvider';
+import Scene from '../Scene';
+import Button from '../Button';
+import ButtonProvider from '../ButtonProvider';
+import Game, { Tree } from '../Game';
+import DisplayWrapperHandler from './Event/DisplayWrapperHandler';
+import HandlerInterface from './Event/HandlerInterface';
+import SceneProvider from './SceneProvider';
 
 class ChoiceToBuild {
     private _title: string;
     private _link: string;
 
-    constructor(private builder: ScriptBuilder, private index) {
+    constructor(private canvas: HTMLCanvasElement, private index) {
     }
 
     title(title: string) {
@@ -22,7 +24,7 @@ class ChoiceToBuild {
     }
 
     toChoice(): Button {
-        return ButtonProvider.provideFromCanvas(this.builder.canvas, this.index, this._link, this._title);
+        return ButtonProvider.provideFromCanvas(this.canvas, this.index, this._link, this._title);
     }
 }
 
@@ -31,8 +33,9 @@ export class SceneToBuild {
     private _name: string;
     private _choices: ChoiceToBuild[] = [];
     private _img: any;
+    private handlers: HandlerInterface[] = [];
 
-    constructor(private builder: ScriptBuilder) {}
+    constructor(private canvas: HTMLCanvasElement) {}
 
     public toScene(): Scene {
         if (!this.id || !this.name || this._choices.length < 0 || this._choices.length > 4) {
@@ -40,7 +43,7 @@ export class SceneToBuild {
         }
 
         let choices = this._choices.map(choice => choice.toChoice());
-        return new Scene(this._img, this._name, choices);
+        return new Scene(this._img, this._name, choices, this.handlers);
     }
 
     public id(id: string) {
@@ -56,28 +59,24 @@ export class SceneToBuild {
     }
 
     public choice(title: string = null) {
-        const choice = new ChoiceToBuild(this.builder, this._choices.length);
+        const choice = new ChoiceToBuild(this.canvas, this._choices.length);
 
         this._choices.push(choice);
 
         return choice.title(title);
     }
 
-    onDisplay(param: (game: Game) => void) {
-        throw new Error('@todo'); // @todo
+    onDisplay(handler: () => void) {
+        this.handlers.push(new DisplayWrapperHandler(handler));
     }
 }
 
-export type Vars = Record<string, boolean | string>;
-
-export type BuildProvider = (scene: SceneToBuild, vars: Vars) => void;
+export type BuildProvider = (scene: SceneToBuild, game: Game) => void;
 
 export default class ScriptBuilder {
     private _tree: Tree = {};
 
     private actualScene: SceneToBuild;
-
-    private vars: Vars;
 
     constructor(public canvas: HTMLCanvasElement) {
     }
@@ -86,11 +85,9 @@ export default class ScriptBuilder {
         return this._tree;
     }
 
-    public add(build: BuildProvider) {
-        this.actualScene = new SceneToBuild(this);
+    public add(id: string, build: BuildProvider) {
+        this.actualScene = new SceneToBuild(this.canvas);
 
-        build(this.actualScene, this.vars);
-
-        this._tree[this.actualScene._id] = this.actualScene.toScene();
+        this._tree[id] = new SceneProvider(this.canvas, build);
     }
 }
