@@ -19,6 +19,6 @@ export default (scene: SceneToBuild, game: Game) => {
     }
 
     scene.choice('Quelle heure est-il ?').link('watchmaker-ask-hour');
-    scene.choice('Je souhaiterais réparer ma montre à gousset').link('watchmaker-ask-repair');
+    scene.choice('Je souhaiterais réparer ma montre à gousset').link('watchmaker-repair');
     scene.choice('Rien du tout, au revoir').link('index');
 };

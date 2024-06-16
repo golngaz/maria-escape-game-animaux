@@ -20,7 +20,9 @@ export default (scene: SceneToBuild, game: Game) => {
         scene.choice('Banque des Sorciers').link('bank');
     }
 
-    if (game.var('hogwarts-completed') !== true) {
+    if (game.var('watchmaker-completed') === true && game.var('bank-completed') === true) {
         scene.choice('Poudlard').link('hogwarts');
+    } else if (game.var('try-hogwarts-too-far') !== true) {
+        scene.choice('Poudlard').link('hogwarts-too-far');
     }
 };
