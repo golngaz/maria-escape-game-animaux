@@ -1,6 +1,7 @@
 import img from '../assets/img/chemin_de_traverse.webp';
 import { SceneToBuild } from '../src/Script/ScriptBuilder';
 import Game from '../src/Game';
+import music from '../assets/music/main-theme.mp3';
 
 export default (scene: SceneToBuild, game: Game) => {
     scene.img(img);

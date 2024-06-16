@@ -5,6 +5,7 @@ import Game, { Tree } from '../Game';
 import DisplayWrapperHandler from './Event/DisplayWrapperHandler';
 import HandlerInterface from './Event/HandlerInterface';
 import SceneProvider from './SceneProvider';
+import { Howl } from 'howler';
 
 class ChoiceToBuild {
     private _title: string;
@@ -66,8 +67,29 @@ export class SceneToBuild {
         return choice.title(title);
     }
 
-    onDisplay(handler: () => void) {
+    public onDisplay(handler: () => void) {
         this.handlers.push(new DisplayWrapperHandler(handler));
+    }
+
+    /**
+     * @deprecated à terminer (les musiques se cumulent les unes sur les autres)
+     */
+    public playMusic(music) {
+        this.onDisplay(() => {
+            const howl = new Howl({
+                src: [music],
+                loop: true,
+                volume: 1,
+                onload: () => {
+                    console.log('Music loaded successfully!');
+                },
+                onloaderror: (id, err) => {
+                    console.error('Failed to load music:', err);
+                }
+            });
+            // Jouer la musique après l'interaction de l'utilisateur
+            howl.play();
+        });
     }
 }
 

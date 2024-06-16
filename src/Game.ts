@@ -3,6 +3,8 @@ import Emitter from './Emitter';
 import Button from './Button';
 import DisplayEvent from './Script/Event/DisplayEvent';
 import SceneProvider from './Script/SceneProvider';
+import { Howl } from 'howler';
+import music from '../assets/music/main-theme.mp3';
 
 type VarDatum = string | boolean | null;
 
@@ -88,6 +90,21 @@ export default class Game {
     public init() {
         this._canvas.width = window.innerWidth;
         this._canvas.height = window.innerHeight;
+
+        const howl = new Howl({
+            src: [music],
+            loop: true,
+            volume: 1,
+            onload: () => {
+                console.log('Music loaded successfully!');
+            },
+            onloaderror: (id, err) => {
+                console.error('Failed to load music:', err);
+            }
+        });
+        // Jouer la musique après l'interaction de l'utilisateur
+        howl.play();
+        document.getElementById('intro').remove();
     }
 
     public setBackground(img) {

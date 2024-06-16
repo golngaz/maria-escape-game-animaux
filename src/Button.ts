@@ -19,6 +19,7 @@ export default class Button {
         gradient1.addColorStop(0.95, '#f1dea7C8');
 
         ctx.fillStyle = gradient1;
+
         ctx.beginPath()
         ctx.roundRect(this.rect.x, this.rect.y, this.rect.width, this.rect.height, [15]);
         ctx.fill();
@@ -26,7 +27,7 @@ export default class Button {
 
         if (this.text) {
             ctx.font = '20px "Playwrite NL"';
-            ctx.fillStyle = 'rgba(3, 55, 150)';
+            ctx.fillStyle = 'rgba(0, 0, 0)';
             this.text.split('\n').forEach((line, i) => {
                 const lineY = this.rect.y + 35 + (40 * i);
                 ctx.fillText(line, this.rect.x + 20, lineY);
