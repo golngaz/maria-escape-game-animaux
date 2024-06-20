@@ -1,6 +1,7 @@
-import img from '../assets/img/hogwarts-dungeon.png';
+import img from '../assets/img/hogwarts-corridor.jpeg';
 import { SceneToBuild } from '../src/Script/ScriptBuilder';
 import Game from '../src/Game';
+import { LabyrinthBuilder } from '../src/Script/LabyrinthBuilder';
 
 export default (scene: SceneToBuild, game: Game) => {
     scene.img(img);
@@ -8,13 +9,20 @@ export default (scene: SceneToBuild, game: Game) => {
     scene.title('Poudlard - Labyrinthe');
     scene.dialog('Il y a deux portes');
 
-    if (game.var('lab-from') === 'e') {
-        scene.choice('Porte en face').link('lab-8').onClick(() => game.var('lab-from', 'e'));;
-        scene.choice('Porte de gauche').link('lab-4');
-    } else if(game.var('lab-from') === 's') {
-        scene.choice('Porte à gauche').link('lab-8').onClick(() => game.var('lab-from', 'e'));
-        scene.choice('Couloir à droite').link('lab-u').onClick(() => game.var('lab-from', 'n'));
-        scene.choice('Repartir en arrière').link('lab-4');
-    }
-    
+    LabyrinthBuilder.build(scene, game)
+        .link('lab-8').from('e')
+            .choice('Porte en face', 'e')
+            .choice('Revenir en arrière', 'o')
+            .choice('Aller à gauche', 's')
+
+        .link('lab-4').from('n')
+            .choice('Porte à gauche', 'e')
+            .choice('Aller à droite', 'o')
+            .choice('Repartir en arrière', 's')
+
+        .link('lab-u').from('n')
+            .choice('Aller en face', 'o')
+            .choice('Repartir en arrière', 'e')
+            .choice('Aller à droite', 's')
+    ;
 };

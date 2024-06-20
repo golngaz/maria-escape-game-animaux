@@ -7,15 +7,10 @@ export default (scene: SceneToBuild, game: Game) => {
     scene.img(img);
 
     scene.title('Poudlard - Labyrinthe');
-    scene.dialog('Vous êtes entré dans une pièce circulaire avec deux portes');
+    scene.dialog('Vous vous retrouvez dans une pièce sans portes');
 
     LabyrinthBuilder.build(scene, game)
-        .link('lab-8').from('s')
-            .choice('Aller tout droit', 's')
+        .link('lab-un').from('s')
             .choice('Repartir en arrière', 'n')
-
-        .link('lab-23').from('n')
-            .choice('Aller tout droit', 'n')
-            .choice('Repartir en arrière', 's')
     ;
 };

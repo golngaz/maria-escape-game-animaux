@@ -1,6 +1,7 @@
-import img from '../assets/img/hogwarts-dungeon.png';
+import img from '../assets/img/hogwarts-corridor.jpeg';
 import { SceneToBuild } from '../src/Script/ScriptBuilder';
 import Game from '../src/Game';
+import { LabyrinthBuilder } from '../src/Script/LabyrinthBuilder';
 
 export default (scene: SceneToBuild, game: Game) => {
     scene.img(img);
@@ -10,7 +11,7 @@ export default (scene: SceneToBuild, game: Game) => {
 
     LabyrinthBuilder.build(scene, game)
         .link('lab-un').from('e')
-            .choice('Repartir en arrière', 'e')
+            .choice('Aller à droite', 'e')
             .choice('Revenir sur mes pas', 'n')
             .choice('Tour droit', 's')
 
@@ -24,22 +25,4 @@ export default (scene: SceneToBuild, game: Game) => {
             .choice('Aller à gauche', 'e')
             .choice('Continuer tout droit', 'n')
         ;
-
-
-    if (game.var('lab-from') === 'e') {
-        scene.choice('Droite').link('lab-un').onClick(() => game.var('lab-from', 'e'));
-        scene.choice('Gauche').link('lab-2').onClick(() => game.var('lab-from', 'e'));
-        scene.choice('Repartir en arrière').link('hogwarts');
-    
-    } else if (game.var('lab-from') === 'n') {
-        scene.choice('Tout droit').link('lab-2').onClick(() => game.var('lab-from', 'e'));
-        scene.choice('Revenir sur mes pas').link('lab-un').onClick(() => game.var('lab-from', 'e'));
-        scene.choice('Gauche').link('hogwarts')
-    
-    } else if (game.var('lab-from') === 's') {
-        scene.choice('Revenir sur mes pas').link('lab-2').onClick(() => game.var('lab-from', 'e'));
-        scene.choice('Tour droit').link('lab-un').onClick(() => game.var('lab-from', 'e'));
-        scene.choice('Droite').link('hogwarts');
-    }
-    
 };
