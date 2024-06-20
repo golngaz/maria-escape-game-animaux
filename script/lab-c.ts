@@ -10,19 +10,19 @@ export default (scene: SceneToBuild, game: Game) => {
     scene.dialog('Vous vous retrouvez dans un embranchement');
 
     LabyrinthBuilder.build(scene, game)
-        .link('lab-un').from('e')
-            .choice('Aller à droite', 'e')
-            .choice('Revenir sur mes pas', 'n')
-            .choice('tout droit', 's')
+        .link('lab-25').from('e')
+            .choice('Aller à gauche', 'o')
+            .choice('Aller tout droit', 's')
+            .choice('Repartir en arrière', 'n')
 
-        .link('hogwarts')
-            .choice('Revenir en arrière', 'e')
-            .choice('Aller à droite', 's')
-            .choice('Aller à gauche', 'n')
+        .link('lab-12').from('o')
+            .choice('Aller à gauche', 's')
+            .choice('Repartir en arrière', 'o')
+            .choice('Aller à droite', 'n')
 
-        .link('lab-2').from('e')
+        .link('lab-36').from('e')
+            .choice('Aller tout droit', 'n')
+            .choice('Aller à droite', 'o')
             .choice('Repartir en arrière', 's')
-            .choice('Aller à gauche', 'e')
-            .choice('Continuer tout droit', 'n')
         ;
 };

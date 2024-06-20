@@ -7,5 +7,9 @@ export default (scene: SceneToBuild, game: Game) => {
     scene.title('Maître du dab');
     scene.dialog('Vous dabbez comme un dieu');
 
-    scene.choice('Merci').link('safe-open');
+    let varLink = game.var('dab-link') as string | null;
+
+    const link = varLink === null ? 'safe-open' : varLink;
+
+    scene.choice('Merci').link(link);
 };

@@ -20,7 +20,7 @@ export default (scene: SceneToBuild, game: Game) => {
             .choice('Repartir en arrière', 'e')
             .choice('Porte au fond à gauche', 'o')
 
-        .link('lab-r').from('e')
+        .link('lab-r').from('s')
             .choice('Repartir en arrière', 'o')
             .choice('Aller à droite', 'n')
             .choice('Aller au fond à gauche', 'e')
