@@ -85,6 +85,9 @@ export class SceneToBuild {
         return choice.title(title);
     }
 
+    /**
+     * @deprecated gérer la séquentialité des events pour pouvoir bien l'utiliser (event qui s'effectue pendant le draw de l'écran)
+     */
     public onDisplay(handler: () => void) {
         this.handlers.push(new DisplayWrapperHandler(handler));
     }

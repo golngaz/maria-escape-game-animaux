@@ -6,7 +6,10 @@ import SceneProvider from './Script/SceneProvider';
 import { Howl } from 'howler';
 import music from '../assets/music/main-theme.mp3';
 import bubbleImg from '../assets/img/bubble-bd.png'
+import mapButtonImg from '../assets/img/map-button.png'
+import mapImg from '../assets/img/map-hogwarts.png'
 import SelectChoiceEvent from './Script/Event/SelectChoiceEvent';
+import Rect from './Rect';
 
 type VarDatum = string | boolean | null | Array<string> | Array<boolean>;
 
@@ -21,9 +24,13 @@ export default class Game {
 
     public _tree: Tree;
 
-    private lastBindButton: null | number = null;
+    private lastBindChoiceButton: null | number = null;
+    private lastBindMapButton: null | number = null;
     private vars: Record<string, VarDatum> = {};
     private actualScene: Scene = null;
+    private _allowMap: boolean = false;
+    private _mapDisplayed: boolean = false;
+    private drawnScene: Scene;
 
     constructor(public _canvas: HTMLCanvasElement, private readonly emitter?: Emitter) {
         this.ctx = _canvas.getContext('2d');
@@ -35,27 +42,38 @@ export default class Game {
     public run(tree: Tree, initBranch: string) {
         this._tree = tree;
         let sceneProvider = this._tree[initBranch];
-        this.drawScene(sceneProvider.provide(this));
+
+        this.actualScene = sceneProvider.provide(this);
+
+        this.draw();
     }
 
-    private drawScene(scene: Scene) {
-        if (this.lastBindButton !== null) {
-            this.emitter.off(this.lastBindButton);
-            this.lastBindButton = null;
-        }
+    draw() {
+        const scene = this.actualScene;
+
+        this.unbindEvents();
 
         this.setBackground(scene.img);
 
         this.ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
 
+        console.log('JE DRAW ', this._allowMap)
+        this.drawMapButton();
         this.drawScore();
-        this.drawTitle(scene.title);
-        this.drawDialog(scene.dialog);
-        this.drawChoices(scene.choices);
+
+        if (this._mapDisplayed) {
+            this.drawMap();
+        } else {
+            this.drawTitle(scene.title);
+            this.drawDialog(scene.dialog);
+            this.drawChoices(scene.choices);
+        }
+
+        this.drawnScene = scene;
     }
 
-    private handleClickButton(choices: Array<Button>) {
-        return (e) => {
+    private handleClickChoice(choices: Array<Button>) {
+        return (e: MouseEvent) => {
             const { offsetX, offsetY } = e;
             choices.forEach((choice, i) => {
                 if (choice.rect.contains(offsetX, offsetY)) {
@@ -65,13 +83,11 @@ export default class Game {
                         throw new Error('La scene "' + choice.treeLink + '" est introuvable');
                     }
 
-                    if (this.actualScene !== null) {
-                        const clickEvent = new SelectChoiceEvent(this, i);
-                        this.actualScene.handlers.filter(handler => handler.supports(clickEvent)).forEach(handler => handler.handle(clickEvent))
-                    }
+                    const clickEvent = new SelectChoiceEvent(this, i);
+                    this.actualScene.handlers.filter(handler => handler.supports(clickEvent)).forEach(handler => handler.handle(clickEvent))
 
                     this.actualScene = sceneProvider.provide(this);
-                    this.drawScene(this.actualScene);
+                    this.draw();
                     const event = new DisplayEvent(this);
                     this.actualScene.handlers.filter(handler => handler.supports(event)).forEach(handler => handler.handle(event))
                 }
@@ -84,8 +100,8 @@ export default class Game {
             choice.draw(this.ctx);
         });
 
-        if (this.lastBindButton === null) {
-            this.lastBindButton = this.emitter.emit(this._canvas, 'click', this.handleClickButton(choices));
+        if (this.lastBindChoiceButton === null) {
+            this.lastBindChoiceButton = this.emitter.emit(this._canvas, 'click', this.handleClickChoice(choices));
         }
     }
 
@@ -98,6 +114,16 @@ export default class Game {
         // this.ctx.fillText(`Action: ${choice.action}`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 70);
         // this.ctx.fillText(`Réponse: ${choice.response}`, this.canvas.width / 2 - 100, this.canvas.height / 2 - 40);
         this.ctx.fillText(`Cliquez pour revenir`, this._canvas.width / 2 - 100, this._canvas.height / 2 - 10);
+    }
+
+    public enableMap() {
+        this._allowMap = true;
+        this._mapDisplayed = false;
+    }
+
+    public disableMap() {
+        this._allowMap = false;
+        this._mapDisplayed = false;
     }
 
     public init() {
@@ -179,5 +205,43 @@ export default class Game {
         this.ctx.fillText('Score : ' + this.score.toString(), 0.04 * this._canvas.width, 0.08 * this._canvas.height);
 
         this.ctx.textAlign = 'left';
+    }
+
+    private drawMapButton() {
+        if (!this._allowMap) {
+            return;
+        }
+
+        const rect = new Rect(0.04 * this._canvas.width, 0.15 * this._canvas.height, 150, 150);
+
+        this.lastBindMapButton = this.emitter.emit(this._canvas, 'click', (e) => {
+            if (rect.contains(e.offsetX, e.offsetY)) {
+                this._mapDisplayed = !this._mapDisplayed;
+                this.draw();
+            }
+        });
+
+        rect.drawImg(this.ctx, mapButtonImg)
+    }
+
+    private drawMap() {
+        const rect = new Rect(0, 0, this._canvas.width, this._canvas.height);
+
+
+        rect.drawImg(this.ctx, mapImg);
+    }
+
+    private unbindEvents() {
+        if (this.lastBindChoiceButton !== null) {
+            this.emitter.off(this.lastBindChoiceButton);
+            this.lastBindChoiceButton = null;
+        }
+
+        if (this.lastBindMapButton !== null) {
+            this.emitter.off(this.lastBindMapButton);
+
+            this.lastBindMapButton = null;
+        }
+
     }
 }

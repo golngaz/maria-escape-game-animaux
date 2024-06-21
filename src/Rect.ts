@@ -9,4 +9,13 @@ export default class Rect {
     contains(x, y) {
         return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
     }
+
+    public drawImg(ctx: CanvasRenderingContext2D, src) {
+        const image = new Image();
+        image.src = src;
+
+        image.onload = () => {
+            ctx.drawImage(image, this.x, this.y, this.width, this.height);
+        }
+    }
 }

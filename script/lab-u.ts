@@ -15,7 +15,7 @@ export default (scene: SceneToBuild, game: Game) => {
             .choice('Revenir sur mes pas', 'n')
             .choice('tout droit', 's')
 
-        .link('hogwarts')
+        .link('hogwarts-e')
             .choice('Revenir en arrière', 'e')
             .choice('Aller à droite', 's')
             .choice('Aller à gauche', 'n')

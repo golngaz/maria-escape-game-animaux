@@ -5,6 +5,7 @@ export type FromType = 'n' | 'e' | 'o' | 's';
 
 class Link {
     public _from: string = null;
+    private _handler: () => void = null;
 
     public constructor(private _link: string, private scene: SceneToBuild, private game: Game) {}
 
@@ -21,6 +22,10 @@ class Link {
             if (this._from) {
                 link.onClick(() => this.game.var('lab-from', this._from));
             }
+
+            if (this._handler) {
+                link.onClick(this._handler);
+            }
         }
 
         return this;
@@ -28,6 +33,12 @@ class Link {
 
     public link(link: string): Link {
         return new Link(link, this.scene, this.game);
+    }
+
+    onClick(handler: () => void) {
+        this._handler = handler;
+
+        return this;
     }
 }
 

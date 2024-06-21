@@ -1,8 +1,10 @@
+type MouseCustomHandler = (e: MouseEvent, ...params: any[]) => void;
+
 export default class Emitter {
     private references = [];
     private index = 0;
 
-    public emit(element: HTMLElement, eventName: string, originalHandler, ...params): number {
+    public emit(element: HTMLElement, eventName: string, originalHandler: MouseCustomHandler, ...params): number {
 
         const handler = (event) => {originalHandler(event, ...params)};
 

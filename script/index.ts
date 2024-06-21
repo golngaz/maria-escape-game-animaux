@@ -25,6 +25,4 @@ export default (scene: SceneToBuild, game: Game) => {
     } else if (game.var('try-hogwarts-too-far') !== true) {
         scene.choice('Poudlard').link('hogwarts-too-far');
     }
-
-    scene.choice('debug').link('hogwarts');
 };

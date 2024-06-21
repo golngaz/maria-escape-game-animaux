@@ -16,7 +16,7 @@ export default (scene: SceneToBuild, game: Game) => {
             .choice('Porte à droite', 'n')
             .choice('Porte en face', 'e')
 
-        .link('lab-1').from('s')
+        .link('lab-1').from('s').onClick(() => game.disableMap())
             .choice('Porte à gauche', 'o')
             .choice('Porte en face', 's')
             .choice('Porte à droite', 'e')

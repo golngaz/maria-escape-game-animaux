@@ -8,5 +8,5 @@ export default (scene: SceneToBuild, game: Game) => {
     scene.title('Poudlard');
     scene.dialog('Vous contemplez la meilleure école de sorcier du monde');
 
-    scene.choice('Y aller').link('hogwarts-outside');
+    scene.choice('Y aller').link('hogwarts-e');
 };
