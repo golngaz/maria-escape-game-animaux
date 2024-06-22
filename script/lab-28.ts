@@ -7,7 +7,7 @@ export default (scene: SceneToBuild, game: Game) => {
     scene.img(img);
 
     scene.title('Poudlard - Labyrinthe');
-    scene.dialog('Vous vous retrouvez dans un embranchement');
+    scene.dialog('Vous vous retrouvez dans une pièce avec 3 portes');
 
     LabyrinthBuilder.build(scene, game)
         .link('lab-r').from('n')
