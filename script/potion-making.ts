@@ -6,7 +6,7 @@ import { LabyrinthBuilder } from '../src/Script/LabyrinthBuilder';
 export default (scene: SceneToBuild, game: Game) => {
     scene.img(img);
 
-    scene.title('Poudlard - Labo de Chimie');
+    scene.title('Poudlard - Salle de cours de potions magiques');
     scene.dialog('Vous ouvrez le livre de recettes');
 
     scene.choice('Page 1').link('potion-making-proud');

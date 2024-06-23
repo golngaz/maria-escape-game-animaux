@@ -14,7 +14,7 @@ export default (scene: SceneToBuild, game: Game) => {
     }
 
     scene.choice('Il y a 6h25 minutes').onClick(() => game.score += 2).link('watchmaker-repaired');
-    scene.choice('Il y a 5h25 minutes').onClick(() => game.score-- && game.var('reparo-error', true)).link('watchmaker-reparo');
     scene.choice('Il y a 6h35 minutes').onClick(() => game.score-- && game.var('reparo-error', true)).link('watchmaker-reparo');
-    scene.choice('Il y a 5h35 minutes').onClick(() => game.score-- && game.var('reparo-error', true)).link('watchmaker-reparo');
+    scene.choice('Il y a 6h45 minutes').onClick(() => game.score-- && game.var('reparo-error', true)).link('watchmaker-reparo');
+    scene.choice('Mais... Quelle heure est-il ?').link('watchmaker-reparo-which-hour').onClick(() => game.var('reparo-error', false));
 };

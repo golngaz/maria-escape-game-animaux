@@ -5,8 +5,8 @@ import Game from '../src/Game';
 export default (scene: SceneToBuild, game: Game) => {
     scene.img(img);
 
-    scene.title('Poudlard - Labo de Chimie');
-    scene.dialog('Vous voyez le livre tourner les pages de lui-même\njusqu\'a une page blanche révélant\nla recette de la potion "Lumos"');
+    scene.title('Poudlard - Salle de cours de potions magiques');
+    scene.dialog('Vous voyez le livre tourner les pages de lui-même\njusqu\'à une page blanche révélant\nla recette de la potion "Lumos"');
 
     scene.choice('Lire la recette').link('potion-making-lumos');
 };
